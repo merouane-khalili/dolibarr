@@ -18,6 +18,49 @@
 -- -- VPGSQL8.2 DELETE FROM llx_usergroup_user      WHERE fk_user      NOT IN (SELECT rowid from llx_user);
 -- -- VMYSQL4.1 DELETE FROM llx_usergroup_user      WHERE fk_usergroup NOT IN (SELECT rowid from llx_usergroup);
 
+-- Loan
+create table llx_loan
+(
+  rowid							integer AUTO_INCREMENT PRIMARY KEY,
+  entity						integer DEFAULT 1 NOT NULL,
+  datec							datetime,
+  tms							timestamp,
+  label							varchar(80) NOT NULL,
+  fk_bank						integer,
+  capital						real     default 0 NOT NULL,
+  datestart						date,
+  dateend						date,
+  nbterm						real,
+  rate							double  NOT NULL,
+  note							text,
+  capital_position				real     default 0,
+  date_position					date,
+  paid							smallint default 0 NOT NULL,
+  accountancy_account_capital	varchar(32),
+  accountancy_account_insurance	varchar(32),
+  accountancy_account_interest	varchar(32),
+  fk_user_author				integer DEFAULT NULL,
+  fk_user_modif					integer DEFAULT NULL,
+  active						tinyint DEFAULT 1  NOT NULL
+)ENGINE=innodb;
+
+create table llx_payment_loan
+(
+  rowid				integer AUTO_INCREMENT PRIMARY KEY,
+  fk_loan			integer,
+  datec				datetime,
+  tms				timestamp,
+  datep				datetime,
+  amount_capital	real DEFAULT 0,
+  amount_insurance	real DEFAULT 0,
+  amount_interest	real DEFAULT 0,
+  fk_typepayment	integer NOT NULL,
+  num_payment		varchar(50),
+  note				text,
+  fk_bank			integer NOT NULL,
+  fk_user_creat		integer,
+  fk_user_modif		integer
+)ENGINE=innodb;
 
 ALTER TABLE llx_extrafields ADD COLUMN perms varchar(255) after fieldrequired;
 ALTER TABLE llx_extrafields ADD COLUMN list integer DEFAULT 0 after perms;
@@ -415,3 +458,23 @@ insert into llx_c_action_trigger (code,label,description,elementtype,rang) value
 insert into llx_c_action_trigger (code,label,description,elementtype,rang) values ('TASK_MODIFY','Task modified','Executed when a project task is modified','project',36);
 insert into llx_c_action_trigger (code,label,description,elementtype,rang) values ('TASK_DELETE','Task deleted','Executed when a project task is deleted','project',37);
 
+
+create table llx_c_price_global_variable
+(
+	rowid					integer AUTO_INCREMENT PRIMARY KEY,
+	code					varchar(20) NOT NULL,
+	description		text DEFAULT NULL,
+	value					double(24,8) DEFAULT 0
+)ENGINE=innodb;
+
+create table llx_c_price_global_variable_updater
+(
+	rowid						integer AUTO_INCREMENT PRIMARY KEY,
+	type						integer NOT NULL,
+	description			text DEFAULT NULL,
+	parameters			text DEFAULT NULL,
+	fk_variable			integer NOT NULL,
+	update_interval	integer DEFAULT 0,
+	next_update			integer DEFAULT 0,
+	last_status			text DEFAULT NULL
+)ENGINE=innodb;
